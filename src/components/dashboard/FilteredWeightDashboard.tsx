@@ -29,7 +29,7 @@ export default function FilteredWeightDashboard({
   const [range, setRange] = useState<DateRange>("all");
 
   const filteredEntries = useMemo(
-    () => filterEntriesByDate(entries, range),
+    () => filterEntriesByDate(entries, range, new Date()),
     [entries, range],
   );
 

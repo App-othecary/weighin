@@ -12,13 +12,14 @@ export const DATE_RANGE_OPTIONS = [
 export function filterEntriesByDate(
   entries: WeightEntry[],
   range: DateRange,
+  referenceDate: Date,
 ): WeightEntry[] {
   if (range === "all" || entries.length === 0) {
     return entries;
   }
 
   const days = Number.parseInt(range, 10);
-  const cutoff = new Date();
+  const cutoff = new Date(referenceDate);
 
   cutoff.setHours(0, 0, 0, 0);
   cutoff.setDate(cutoff.getDate() - (days - 1));
