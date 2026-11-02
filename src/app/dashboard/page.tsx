@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import FilteredWeightDashboard from "@/components/dashboard/FilteredWeightDashboard";
 
 import AppNavigation from "@/components/dashboard/AppNavigation";
 import WeightSummaryCard from "@/components/dashboard/WeightSummaryCard";
@@ -148,13 +149,19 @@ export default async function DashboardPage() {
 
           <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
             <div className="min-w-0 space-y-6">
-              <WeightChart
+              <FilteredWeightDashboard
+                entries={entries}
+                unit={unit}
+                targetWeight={targetWeight}
+              />
+
+              {/* <WeightChart
                 entries={entries}
                 targetWeight={targetWeight ?? undefined}
                 unit={unit}
               />
 
-              <WeightHistory entries={entries} unit={unit} />
+              <WeightHistory entries={entries} unit={unit} /> */}
             </div>
 
             <div className="space-y-6">
