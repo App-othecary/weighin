@@ -1,18 +1,16 @@
-import { redirect } from "next/navigation";
-import AuthForm from "@/components/auth/AuthForm";
-import { createClient } from "@/lib/supabase/server";
+import { Suspense } from "react";
+import LoginContent from "./LoginContent";
 
-/**
- * Login page.
- * Already-authenticated users go to the dashboard.
- */
-export default async function LoginPage() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-
-  if (data?.claims) {
-    redirect("/dashboard");
-  }
-
-  return <AuthForm mode="login" />;
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-[#f7f9f6]">
+          <p className="text-sm text-[#687268]">Loading login...</p>
+        </main>
+      }
+    >
+      <LoginContent mode="login" />
+    </Suspense>
+  );
 }
