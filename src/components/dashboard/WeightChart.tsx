@@ -2,6 +2,7 @@
 
 import {
   CartesianGrid,
+  Legend,
   Line,
   LineChart,
   ReferenceLine,
@@ -31,17 +32,34 @@ function formatChartDate(date: string) {
 }
 
 /**
- * Displays weight measurements in the user's preferred unit.
+ * Displays recorded weights and their 7-measurement moving average.
  */
 export default function WeightChart({
   entries,
   targetWeight,
   unit,
 }: WeightChartProps) {
-  const chartData = entries.map((entry) => ({
-    dateLabel: formatChartDate(entry.recordedAt),
-    weight: fromKilograms(entry.weight, unit),
-  }));
+  // Keep measurements in chronological order.
+  const sortedEntries = [...entries].sort((a, b) =>
+    a.recordedAt.localeCompare(b.recordedAt),
+  );
+
+  // Calculate the average of the latest seven measurements.
+  const chartData = sortedEntries.map((entry, index, allEntries) => {
+    const windowStart = Math.max(0, index - 6);
+    const recentEntries = allEntries.slice(windowStart, index + 1);
+
+    const average =
+      recentEntries.reduce((total, item) => total + item.weight, 0) /
+      recentEntries.length;
+
+    return {
+      dateLabel: formatChartDate(entry.recordedAt),
+      weight: fromKilograms(entry.weight, unit),
+      movingAverage: fromKilograms(average, unit),
+    };
+  });
+  console.log("Weight chart data:", chartData);
 
   if (entries.length === 0) {
     return (
@@ -88,10 +106,24 @@ export default function WeightChart({
             />
 
             <Tooltip
-              formatter={(value) => [
+              formatter={(value, name) => [
                 `${Number(value).toFixed(1)} ${unit}`,
-                "Weight",
+                name === "movingAverage"
+                  ? "7-measurement average"
+                  : "Recorded weight",
               ]}
+            />
+
+            <Legend
+              formatter={(value) =>
+                value === "movingAverage"
+                  ? "7-measurement average"
+                  : "Recorded weight"
+              }
+              wrapperStyle={{
+                fontSize: "12px",
+                color: "#687268",
+              }}
             />
 
             {targetDisplay !== undefined && (
@@ -107,13 +139,26 @@ export default function WeightChart({
               />
             )}
 
+            {/* Actual recorded measurements */}
             <Line
               type="monotone"
               dataKey="weight"
+              name="weight"
               stroke="#344a36"
-              strokeWidth={2.5}
-              dot={{ r: 4, fill: "#344a36" }}
+              strokeWidth={2}
+              dot={{ r: 3, fill: "#344a36" }}
               activeDot={{ r: 6 }}
+            />
+
+            {/* Smoothed seven-measurement average */}
+            <Line
+              type="monotone"
+              dataKey="movingAverage"
+              name="movingAverage"
+              stroke="#c18b45"
+              strokeWidth={2.5}
+              dot={false}
+              activeDot={{ r: 5 }}
             />
           </LineChart>
         </ResponsiveContainer>
