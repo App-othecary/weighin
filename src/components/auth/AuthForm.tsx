@@ -26,9 +26,9 @@ export default function AuthForm({ mode }: AuthFormProps) {
     setMessage("");
     setIsLoading(true);
 
-    const supabase = createClient();
-
     try {
+      const supabase = createClient();
+
       if (isRegistering) {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),

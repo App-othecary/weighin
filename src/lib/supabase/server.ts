@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { getSupabaseKey } from "@/lib/supabase/config";
 
 /**
  * Creates a Supabase client for server-side code.
@@ -11,7 +12,7 @@ export async function createClient() {
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    getSupabaseKey(),
     {
       cookies: {
         getAll() {
